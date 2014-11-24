@@ -23,6 +23,7 @@ On your prefered directory workspace, execute the next command to build your Hel
 
 Execute the next command to add a 'demoPage.html' page:
 
+    $ cd hello
     $ slot add -p demoPage
 
 And finaly execute the next command to start up the **Designer Server**, and start prototiping you app: 
@@ -31,9 +32,30 @@ And finaly execute the next command to start up the **Designer Server**, and sta
       
       
          DESIGNER Server on http://localhost:800/
-      
-      
-      CTRL + C to shutdown
+
+
+     * Deployment:
+       PID          5544
+       Root         /home/hello
+     * Framework:
+       metaData     /bind
+       webRootDir   /www
+       mvcRootDir   /app/mvc
+       restRootDir  /app/rest
+       dbRootDir    /app/db
+       restFilter   /rest
+       mvcFilter    /mvc
+     * Logger:
+       logFile      logs/slot.log
+       maxsize      104857600
+       maxFiles     10
+     * Server:
+       devMode      true
+       compress     true
+       caching      true
+       cacheType    inMemory
+
+     CTRL + C to shutdown
 
 Now explore on your browser:
 
