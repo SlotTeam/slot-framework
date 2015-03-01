@@ -1,0 +1,15 @@
+/**
+ * Object model that represents the {@slotName@} Slot
+ */
+function {@slotName@}() {{@slotAttributes@}
+}
+{@slotName@}.create = function() { return new {@slotName@}(); }
+{@slotName@}.prototype.layout = function() { return page.layouts["{@slotName@}"]; }
+{@slotName@}.prototype.bind = function(json) {
+    return this;
+}
+{@slotName@}.prototype.onPreRender = function() {
+    return this;
+}
+Fragments.prototype.{@slotName@} = {@slotName@};
+

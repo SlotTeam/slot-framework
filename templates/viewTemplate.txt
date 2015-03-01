@@ -1,0 +1,40 @@
+/**
+ * Created using Slot Framework
+ * {@pc-machine@} on {@date@}
+ *
+ * {@message@}:
+ * {@page@}
+ */
+
+var Slot = require('slot-framework')
+    ;
+
+/**
+ * Function run must be used to implements your web page logic,then when
+ * you are ready, you must execute the function callback. The function
+ * callback is passed as a parameter when the mainController invoke the
+ * run(callback) method, and you need to pass the web page content to be
+ * rendered.
+ */
+function run(model,  //<<== Instance of mudule '{@modulePath@}'
+             req,
+             callback) {
+    //var sess = req.session;
+
+    /**
+     * TODO:
+     *  1.  Fill the model.main with relevant data:
+     *      model.main.field1 = "The web page title..";
+     *      model.main.field2 = "The web page sub-title..";
+     *      ....
+     *      model.main.fieldN = "The web page sub-title..";
+     */
+
+
+    /**
+     * Call the callback function when your data have been filled on slot
+     */
+    callback(model /*<<== "model to be rendered as a web page"*/);
+}
+
+module.exports.run = run;

@@ -1,0 +1,16 @@
+/**
+ * Created using Slot Framework
+ */
+
+/**
+ * Container for all fragments used in the web page
+ * @constructor
+ */
+function Fragments() {
+}
+
+{@objectsDef@}
+var page = new function () {
+    this.layouts = new function () {{@layouts@}
+    }
+}

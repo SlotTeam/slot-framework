@@ -1,0 +1,15 @@
+/**
+ * Created using Slot Framework
+ * {@pc-machine@} on {@date@}
+ *
+ * {@modelFile@}, Auto-Generating pageModel object, it's contains a pragmatically
+ * version of meta-data bound on design stage. This will helps developers to have
+ * the same definitions on development stage.
+ */
+
+var model = require('./{@modelFileName@}').model.create();
+
+
+{@content@}
+
+module.exports = model;
