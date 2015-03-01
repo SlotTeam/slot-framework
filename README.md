@@ -3,13 +3,13 @@
 
 # [Slot framework](http://www.SlotFramework.org)
 
-> Closing the gap between server and client side, Slot is a Cross Side Web Framework that lets developers reuse code on both sides, 
+> Closing the gap between server and client side, Slot is a Cross Side MVC Web Framework that lets developers reuse code on both sides,
  see more at [www.SlotFramework.org](http://www.SlotFramework.org).
 
 
 ## How to use?
 Slot is built in [Node.js](http://nodejs.org/), and is deployed on [Npmjs.org](http://Npmjs.org/) index to easy use and distribution. 
-Installing the [slot-framework module](https://www.npmjs.org/package/slot-framework) you would enjoy all the necesary components to develop web projects 
+Installing the [slot-framework module](https://www.npmjs.org/package/slot-framework) you would enjoy all the necessary components to develop web projects
 using Slot Framework, 
 but to ease your work, we have created the [Slot Command Line](https://www.npmjs.org/package/slot-cli).
 
@@ -26,7 +26,7 @@ Execute the next command to add a 'demoPage.html' page:
     $ cd hello
     $ slot add -p demoPage
 
-And finaly execute the next command to start up the **Designer Server**, and start prototiping you app: 
+And finally execute the next command to start up the **Designer Server**, and start prototyping you app:
 
     $ slot start
       
