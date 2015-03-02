@@ -21,7 +21,7 @@ On your preferred workspace directory, execute the next command to build your He
 
     $ slot create hello
 
-Execute the next command to add a 'demoPage.html' page:
+Execute the next command to add a `demoPage.html` page:
 
     $ cd hello
     $ slot add -p demoPage
