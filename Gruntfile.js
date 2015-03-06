@@ -1,7 +1,8 @@
 var path = require("path"),
     fs = require('fs'),
+    sortObj = require('sort-object'),
     slot = require('./slot.json'),
-    usageMap = require('./.usageMap');
+    usageMap = require('./.usageMap.json');
 
 module.exports = function (grunt) {
 
@@ -38,32 +39,46 @@ module.exports = function (grunt) {
             if (target == 'html') {
                 url = url.replace(slot.framework.webRootDir, '');
 
-                // Extract all attributes fragment types, using the regex ({@)[^\s]*(@})
-                fs.readFile( filepath ,'binary' /*'utf8'*/, function(err, data) {
+                // Extract all fragment type attributes, using the regex ({@)[^\s]*(@})
+                fs.readFile(filepath, 'binary', function(err, data) {
 
                     var re = /({@)[^\s]*(@})/g; // Regex to find fragments used on this page
-                    var str = data; //'hi {@welcomeMsg@}    </div>    <br>    {@comboBox@} goodby\nhi {@welcome Msg@}    </div>    <br>    {@comb-oBox@} goodby\nhi {@welcome!Msg@}    </div>    <br>    {@combo_Box@} goodby\nhi {@welcomeM~sg@}    </div>    <br>    {@com$boBox@} goodby\nhi {@welcomeMsg@}    </div>    <br>    {@combo\nBox@} goodby';
-                    var m, fragments = [], index;
+                    var str = data;
+                    var m, fragments = [], fragmentName, index = 0;
 
                     while ((m = re.exec(str)) != null) {
-                        console.log(m[0]);
+                        // console.log(m[0]);
 
                         if (m.index === re.lastIndex) {
                             re.lastIndex++;
                         }
 
-                        fragments[index++] = m[0];
+                        fragmentName = m[0].replace("{@","").replace("@}","");
+                        console.log(fragmentName);
+
+                        // Add only declared fragments
+                        if (slot.fragments[fragmentName]) {
+                            fragments[index++] = fragmentName;
+
+                            // Create fragment reference if does not exist
+                            !usageMap.fragment[fragmentName] && (usageMap.fragment[fragmentName] = []);
+
+                            // var valx="Five", vali=5; !obj[valx] && (obj[valx] = vali); obj
+
+                            // Add relation beteewn fragment and page if it does not exists
+                            usageMap.fragment[fragmentName].indexOf(url) < 0 && (usageMap.fragment[fragmentName].push(url));
+                        };
                     }
 
-                    // TODO: update the .usageMap file
-                    // fs.writeFile(slotJsonFile, JSON.stringify(slotJson, null, 4), function (err) {
-                    //     //if (err) {
-                    //     //    pretty.failed("Fail creating '%s'", fragment);
-                    //     //    throw err;
-                    //     //}
-                    //     //pretty.done("Fragment '%s' created on '%s'", fragment, 'todo_path');
-                    //     callback(err)
-                    // });
+                    // Update used fragments on .usageMap.json file
+                    usageMap.page[url] = fragments.sort();
+                    usageMap.page = sortObj(usageMap.page);
+
+                    // Update the .usageMap file
+                    fs.writeFile('./.usageMap.json', JSON.stringify(usageMap, null, 4), function (err) {
+
+                        grunt.log.writeln('usageMap updated: ' + (err ? ' failed ' : 'success') + ' for ' + url);
+                    });
                 });
             }
             else if (target == 'fragmentRootDir') {
