@@ -63,8 +63,6 @@ module.exports = function (grunt) {
                             // Create fragment reference if does not exist
                             !usageMap.fragment[fragmentName] && (usageMap.fragment[fragmentName] = []);
 
-                            // var valx="Five", vali=5; !obj[valx] && (obj[valx] = vali); obj
-
                             // Add relation beteewn fragment and page if it does not exists
                             usageMap.fragment[fragmentName].indexOf(url) < 0 && (usageMap.fragment[fragmentName].push(url));
                         };
@@ -83,6 +81,28 @@ module.exports = function (grunt) {
             }
             else if (target == 'fragmentRootDir') {
                 url = url.replace(slot.framework.fragmentRootDir, '');
+
+                var fragmentName = url.split("/").pop().split(".")[0],
+                    page;
+                grunt.log.writeln('fragment: ' + fragmentName);
+
+                // Add only declared fragments
+                if (slot.fragments[fragmentName] && usageMap.fragment[fragmentName]) {
+
+
+
+                    for(index in usageMap.fragment[fragmentName]) {
+
+                        page = usageMap.fragment[fragmentName][index];
+                        grunt.log.writeln('fragment: ' + fragmentName + ' - page:' + page);
+
+                        buildPage(page, function(content) {
+                            // grunt.log.writeln('url: done - ' + url);
+                            grunt.log.writeln('received content: ' + content.length + 'Kb');
+                        });
+                    }
+                }
+
             }
             else {
                 url = url.replace(slot.framework.metaData, '');
