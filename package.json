@@ -34,7 +34,6 @@
   "dependencies": {
     "colors": "^0.6.2",
     "connect": "2.12.0",
-    "grunt": "^0.4.5",
     "mime": "1.2.11",
     "mkdirp": "0.3.5",
     "string": "^2.0.0",
@@ -52,5 +51,10 @@
   },
   "_id": "slot-framework@0.0.14",
   "_from": "slot-framework@>= 0.0.1",
-  "readme": "slot-framework\n==============\n\nClosing the gap between server and client side, Slot is a Cross Side Web Framework that let you reuse the same code on client and server side.\n\n## How to use?\nThis module contains all components to develop web projects using [Slot Framework](http://www.SlotFramework.org), \nbut to ease your work, we has created the [Slot Command Line](https://www.npmjs.org/package/slot-cli).\n\nJust execute the next to install the command-line global on your machine:\n\n    $ npm install -g slot-cli\n\nExecute the next to build you HelloWorld project:\n\n    $ slot create hello\n\nExecute the next command to add a 'demoPage.html' page:\n\n    $ cd hello\n    $ slot add -p demoPage\n\nAnd finaly execute the next to start up the Designer Server, and start prototiping you app: \n\n    $ slot start\n      \n      \n         DESIGNER Server on http://localhost:800/\n\n\n     * Deployment:\n       PID          5544\n       Root         /home/hello\n     * Framework:\n       metaData     /bind\n       webRootDir   /www\n       mvcRootDir   /app/mvc\n       restRootDir  /app/rest\n       dbRootDir    /app/db\n       restFilter   /rest\n       mvcFilter    /mvc\n     * Logger:\n       logFile      logs/slot.log\n       maxsize      104857600\n       maxFiles     10\n     * Server:\n       devMode      true\n       compress     true\n       caching      true\n       cacheType    inMemory\n\n     CTRL + C to shutdown\n\nNow explore on your browser:\n\n    $ http://localhost:800/\n    and \n    $ http://localhost:800/demoPage.html\n\n\nThe [Slot Command Line](https://www.npmjs.org/package/slot-cli) will help you to create; Pages, Fragments and REST Services. See more on [Slot Framework Docs](http://www.SlotFramework.org/docs) ..."
+  "readme": "slot-framework\n==============\n\nClosing the gap between server and client side, Slot is a Cross Side Web Framework that let you reuse the same code on client and server side.\n\n## How to use?\nThis module contains all components to develop web projects using [Slot Framework](http://www.SlotFramework.org), \nbut to ease your work, we has created the [Slot Command Line](https://www.npmjs.org/package/slot-cli).\n\nJust execute the next to install the command-line global on your machine:\n\n    $ npm install -g slot-cli\n\nExecute the next to build you HelloWorld project:\n\n    $ slot create hello\n\nExecute the next command to add a 'demoPage.html' page:\n\n    $ cd hello\n    $ slot add -p demoPage\n\nAnd finaly execute the next to start up the Designer Server, and start prototiping you app: \n\n    $ slot start\n      \n      \n         DESIGNER Server on http://localhost:800/\n\n\n     * Deployment:\n       PID          5544\n       Root         /home/hello\n     * Framework:\n       metaData     /bind\n       webRootDir   /www\n       mvcRootDir   /app/mvc\n       restRootDir  /app/rest\n       dbRootDir    /app/db\n       restFilter   /rest\n       mvcFilter    /mvc\n     * Logger:\n       logFile      logs/slot.log\n       maxsize      104857600\n       maxFiles     10\n     * Server:\n       devMode      true\n       compress     true\n       caching      true\n       cacheType    inMemory\n\n     CTRL + C to shutdown\n\nNow explore on your browser:\n\n    $ http://localhost:800/\n    and \n    $ http://localhost:800/demoPage.html\n\n\nThe [Slot Command Line](https://www.npmjs.org/package/slot-cli) will help you to create; Pages, Fragments and REST Services. See more on [Slot Framework Docs](http://www.SlotFramework.org/docs) ...",
+  "devDependencies": {
+    "async": "^0.9.0",
+    "grunt": "^0.4.5",
+    "grunt-contrib-watch": "^0.6.1"
+  }
 }

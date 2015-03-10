@@ -1,6 +1,7 @@
 var path = require("path"),
     fs = require('fs'),
     sortObj = require('sort-object'),
+    async = require('async'),
     slot = require('./slot.json'),
     usageMap = require('./.usageMap.json');
 
@@ -35,6 +36,9 @@ module.exports = function (grunt) {
         if (target != 'configFiles') {
 
             var url = path.join('/', filepath);
+
+            grunt.log.writeln('url: ' + url);
+
 
             if (target == 'html') {
                 url = url.replace(slot.framework.webRootDir, '');
@@ -76,46 +80,53 @@ module.exports = function (grunt) {
                     fs.writeFile('./.usageMap.json', JSON.stringify(usageMap, null, 4), function (err) {
 
                         grunt.log.writeln('usageMap updated: ' + (err ? ' failed ' : 'success') + ' for ' + url);
+
+                        if (!err)
+                            buildPage(url, function(content) {
+                                // grunt.log.writeln('url: done - ' + url);
+                                grunt.log.writeln('received content: ' + content.length + 'Kb');
+                            });
                     });
                 });
             }
             else if (target == 'fragmentRootDir') {
                 url = url.replace(slot.framework.fragmentRootDir, '');
 
-                var fragmentName = url.split("/").pop().split(".")[0],
-                    page;
+                var page,
+                    fragmentName = url.split("/").pop().split(".")[0];
+
                 grunt.log.writeln('fragment: ' + fragmentName);
 
                 // Add only declared fragments
                 if (slot.fragments[fragmentName] && usageMap.fragment[fragmentName]) {
 
+                    async.eachSeries(usageMap.fragment[fragmentName], function( page, callback) {
 
-
-                    for(index in usageMap.fragment[fragmentName]) {
-
-                        page = usageMap.fragment[fragmentName][index];
                         grunt.log.writeln('fragment: ' + fragmentName + ' - page:' + page);
 
-                        buildPage(page, function(content) {
-                            // grunt.log.writeln('url: done - ' + url);
-                            grunt.log.writeln('received content: ' + content.length + 'Kb');
-                        });
-                    }
-                }
+                        setTimeout(function() {
+                            buildPage(page, function(content) {
+                                grunt.log.writeln('received content: ' + content.length + 'Kb - ' + (new Date()).getTime() );
 
+                                callback();
+                            });
+                        }, 1000);
+
+                    }, function(err){
+                        // if any of the file processing produced an error, err would equal that error
+                        if( err ) {
+                            // One of the iterations produced an error, the processing will now stop.
+                            console.log('Building pages has failed');
+                        } else {
+                            console.log('All pages have been built successfully');
+                        }
+                    });
+                }
             }
             else {
                 url = url.replace(slot.framework.metaData, '');
-            };
-
-            grunt.log.writeln('url: ' + url);
-
-            if (target == 'html')
-                buildPage(url, function(content) {
-                    // grunt.log.writeln('url: done - ' + url);
-                    grunt.log.writeln('received content: ' + content.length + 'Kb');
-                })
-        };
+            }
+        }
     });
 
     grunt.registerTask('default', 'Initiate services for Slot Framework', function() {
