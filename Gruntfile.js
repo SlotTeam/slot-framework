@@ -20,7 +20,11 @@ module.exports = function (grunt) {
                 }
             },
             html: {
-                files: ['www/**/*.html']
+                files: ['www/**/*.html'],
+                options: {
+                    interrupt: true,
+                    debounceDelay: 1000
+                }
             },
             fragmentRootDir: {
                 files: ['design/fragment/**/*.html']
