@@ -6,7 +6,7 @@ var connect = require('connect'),
     config = require('./config'),
     mime = require("mime"),
     Util = require("./util")
-    port = process.argv[2] || 2000 /*8888*/;
+port = process.argv[2] || 2001;
 
 function Slot() {
     this.key = "";
@@ -44,7 +44,7 @@ function logmsg(message) {
 function execJsonBinding(nameSpace, slotKey, uriBuildKey, fileContent, filename, binds, callback) {
 
     // Create a new Object for the Slot, if not exists a "slotModels[slotKey]" instance
-    slotModels[slotKey] = slotModels[slotKey] ? slotModels[slotKey] : new Object();
+    slotModels[uriBuildKey][slotKey] = slotModels[uriBuildKey][slotKey] ? slotModels[uriBuildKey][slotKey] : new Object();
 
     manyTabs++;
 
@@ -63,9 +63,9 @@ function execJsonBinding(nameSpace, slotKey, uriBuildKey, fileContent, filename,
 
             // If 'binds[field].bind' was not assigned, then take bind from fragment.json definition
             var jsonBindFile = binds[field].bind
-                               && ( binds[field].bind instanceof Array || binds[field].bind.trim() != "" )
-                               ?  binds[field].bind
-                               : (fragments[slotKeyNew] ? fragments[slotKeyNew]+".json" : "")
+                && ( binds[field].bind instanceof Array || binds[field].bind.trim() != "" )
+                    ?  binds[field].bind
+                    : (fragments[slotKeyNew] ? fragments[slotKeyNew]+".json" : "")
                 ;
             var layoutFileName = path.join(process.cwd(), slotJson.framework.fragmentRootDir /*webRootDir*/, slotUri);
 
@@ -73,25 +73,25 @@ function execJsonBinding(nameSpace, slotKey, uriBuildKey, fileContent, filename,
             slots[uriBuildKey][slotKeyNew] = slotUri;
 
             if(jsonBindFile instanceof Array) {
-                logmsg("\n"); pageModel.push("\n");
+                logmsg("\n"); pageModel[uriBuildKey].push("\n");
 
                 lineMsg = "// attribute " + nameSpace+"."+field + " is an array of fragment " + slotKeyNew + "";
-                pageModel.push(lineMsg);
+                pageModel[uriBuildKey].push(lineMsg);
                 logmsg(lineMsg);
 
                 lineMsg = nameSpace+"."+field + " = []";
-                pageModel.push(lineMsg);
+                pageModel[uriBuildKey].push(lineMsg);
                 logmsg(lineMsg);
             }
             else {
-                logmsg("\n"); pageModel.push("\n");
+                logmsg("\n"); pageModel[uriBuildKey].push("\n");
 
                 lineMsg = "// attribute " + nameSpace+"."+field + " is an instance of fragment " + slotKeyNew + "";
-                pageModel.push(lineMsg);
+                pageModel[uriBuildKey].push(lineMsg);
                 logmsg(lineMsg);
 
                 lineMsg = nameSpace+"."+field + " = model.fragments." + slotKeyNew + ".create();";
-                pageModel.push(lineMsg);
+                pageModel[uriBuildKey].push(lineMsg);
                 logmsg(lineMsg);
             }
 
@@ -127,8 +127,8 @@ function execJsonBinding(nameSpace, slotKey, uriBuildKey, fileContent, filename,
             fileContent = fileContent.replace(RegExp("{@" + field + "@}","g"), template);
 
             logmsg("--x");
-            slotModels[slotKey][field] = new Object();
-            slotModels[slotKey][field].slot = slotKeyNew;
+            slotModels[uriBuildKey][slotKey][field] = new Object();
+            slotModels[uriBuildKey][slotKey][field].slot = slotKeyNew;
         }
         else {
             fileContent = fileContent.replace(RegExp("{@" + field + "@}", "g"), binds[field]);
@@ -138,8 +138,8 @@ function execJsonBinding(nameSpace, slotKey, uriBuildKey, fileContent, filename,
             // Exclude fragmentID from the list, it will be created and asigned directly from
             // the constructor
             if(field != "fragmentID") {
-                slotModels[slotKey][field] = "";
-                pageModel.push(lineMsg);
+                slotModels[uriBuildKey][slotKey][field] = "";
+                pageModel[uriBuildKey].push(lineMsg);
             }
 
             /**
@@ -158,7 +158,7 @@ function execJsonBinding(nameSpace, slotKey, uriBuildKey, fileContent, filename,
 
 var count = 0,
     lineMsg,
-    pageModel = [];
+    pageModel = new Object();
 
 function loadFile(nameSpace, slotKey, uri, uriBuildKey, filename, jsonBindFile, onDontExistsCallback, onReadFileError, onBindComplete) {
 
@@ -215,11 +215,11 @@ function loadFile(nameSpace, slotKey, uri, uriBuildKey, filename, jsonBindFile, 
                     var rows = "";
 
                     lineMsg = "// attribute " + nameSpace+ " is an array of fragment " + slotKey + "";
-                    pageModel.push(lineMsg);
+                    pageModel[uriBuildKey].push(lineMsg);
                     logmsg(lineMsg);
 
                     lineMsg = nameSpace + " = []";
-                    pageModel.push(lineMsg);
+                    pageModel[uriBuildKey].push(lineMsg);
                     logmsg(lineMsg);
 
                     //Iterate over each slot data record
@@ -230,7 +230,7 @@ function loadFile(nameSpace, slotKey, uri, uriBuildKey, filename, jsonBindFile, 
 
                         //lineMsg = "var " + slotKey +""+( count )+ " = model.fragments." + slotKey + ".create();";
                         lineMsg = "var " +currentVar+ " = model.fragments." + slotKey + ".create();";
-                        pageModel.push(lineMsg);
+                        pageModel[uriBuildKey].push(lineMsg);
                         logmsg(lineMsg);
 
                         //Doing binding
@@ -243,7 +243,7 @@ function loadFile(nameSpace, slotKey, uri, uriBuildKey, filename, jsonBindFile, 
                         count++;
                         //lineMsg = nameSpace + ".push("+slotKey +""+( count++ )+")";
                         lineMsg = nameSpace + ".push("+currentVar+")";
-                        pageModel.push(lineMsg);
+                        pageModel[uriBuildKey].push(lineMsg);
                         logmsg(lineMsg);
                     }
 
@@ -281,6 +281,12 @@ var app = connect()
             uriBuildKey = url.parse(request.url).pathname.replace(/\//g, "-"),
             filename = path.join(process.cwd(), slotJson.framework.webRootDir, uri);
 
+        // Create a new Object for the current uriBuildKey
+        !slotModels[uriBuildKey] && (slotModels[uriBuildKey] = new Object());
+
+        // Create a new Array for the current uriBuildKey
+        !pageModel[uriBuildKey] && (pageModel[uriBuildKey] = []);
+
         // Load requested file
         loadFile("model",   // <<== nameSpace
             "main",         // <<== slotKey
@@ -314,9 +320,9 @@ var app = connect()
                             nowTimeStamp = (new Date()).toDateString() + " " + (new Date()).toLocaleTimeString();
                         var uri = url.parse(request.url).pathname,
                             modelName       = filename.split(process.cwd())[1];
-                            //modelName       = path.join(slotJson.framework.mvcRootDir, modelName.replace(/[\\www][/www]/g, ""));
-                            modelName       = path.join(slotJson.framework.mvcRootDir, modelName.replace(/^\\www|^\/www/g, ""));
-                            modelName       = modelName.replace(/^\\/, ''); //Remove first backslash
+                        //modelName       = path.join(slotJson.framework.mvcRootDir, modelName.replace(/[\\www][/www]/g, ""));
+                        modelName       = path.join(slotJson.framework.mvcRootDir, modelName.replace(/^\\www|^\/www/g, ""));
+                        modelName       = modelName.replace(/^\\/, ''); //Remove first backslash
                         var modelFile       = Util.prefixFileName(modelName, "m").replace(".html", ".js");
                         var modelFileSrv    = Util.prefixFileName(modelName, "m").replace(".html", "Srv.js");
                         var viewFile        = Util.prefixFileName(modelName, "v").replace(".html", ".js");
@@ -330,14 +336,14 @@ var app = connect()
                         //Add code to enssure directory is fullpath created
                         //
                         console.log('MVC mcvFolder %s \r\n' +
-                                    'MVC mcvFile %s \r\n' +
-                                    'MVC modelName %s \r\n' +
-                                    'MVC __dirname %s \r\n' +
-                                    'MVC process.cwd %s \r\n \r\n' +
-                                    'MVC modelFile %s \r\n' +
-                                    'MVC modelFileSrv %s \r\n' +
-                                    'MVC viewFile %s \r\n'
-                                    , mcvFolder, mcvFile, modelName, __dirname, process.cwd(), modelFile, modelFileSrv, viewFile);
+                            'MVC mcvFile %s \r\n' +
+                            'MVC modelName %s \r\n' +
+                            'MVC __dirname %s \r\n' +
+                            'MVC process.cwd %s \r\n \r\n' +
+                            'MVC modelFile %s \r\n' +
+                            'MVC modelFileSrv %s \r\n' +
+                            'MVC viewFile %s \r\n'
+                            , mcvFolder, mcvFile, modelName, __dirname, process.cwd(), modelFile, modelFileSrv, viewFile);
 
                         mkdirp(path.join(process.cwd(), mcvFolder), function (err) {
                             if (err) console.error(err)
@@ -360,11 +366,11 @@ var app = connect()
                                     obj = tempTemplate.replace(RegExp("{@slotName@}","g"),   sl);
                                     attrs = "\r\n\tthis.fragmentID = \"" +sl+ "\";";
 
-                                    for (var fl in slotModels[sl]) {
-                                        val =  typeof slotModels[sl][fl] == "object"    // There is a Model, represented as an Object
-                                               &&
-                                               slotModels[sl][fl]["slot"]               // Validate if this model have defined a Slot yet
-                                            ?  slotModels[sl][fl]["slot"]               // Take the Slot name
+                                    for (var fl in slotModels[uriBuildKey][sl]) {
+                                        val =  typeof slotModels[uriBuildKey][sl][fl] == "object"    // There is a Model, represented as an Object
+                                        &&
+                                        slotModels[uriBuildKey][sl][fl]["slot"]               // Validate if this model have defined a Slot yet
+                                            ?  slotModels[uriBuildKey][sl][fl]["slot"]               // Take the Slot name
                                             :  "\"\"";                                  // Don't assign a Slot name
 
                                         attrs += "\r\n\tthis." + fl + " = " + val + ";";
@@ -463,7 +469,7 @@ var app = connect()
                                         .replace("{@date@}",        nowTimeStamp)
                                         .replace(RegExp("{@modelFile@}", "g"),   modelFileSrv.split('\\').pop())
                                         .replace(RegExp("{@modelFileName@}", "g"),   modelFileSrv.split(path.sep).pop())
-                                        .replace("{@content@}",     pageModel.join('\r'));
+                                        .replace("{@content@}",     pageModel[uriBuildKey].join('\r'));
                                     ;
                                     fs.writeFile(path.join(process.cwd(), pageModelFile), tempTemplate, function (err) {
                                         if (err) throw err;
@@ -491,8 +497,8 @@ function start(port) {
             console.log('Problems loading slot.json file, you must have this file: %s', err);
         },
         function(buffer) {
-            //port = port ? port : 2000;
-            port || (port = 2000)
+            //port = port ? port : 2001;
+            port || (port = 2001)
             http.createServer(app).listen(parseInt(port, 10));
 
             slotJson = buffer;

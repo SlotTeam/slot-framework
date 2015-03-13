@@ -21,7 +21,7 @@ var connect = require('connect'),
     resourcesCache = new Object(),
     viewsExistsCache = new Object(),
     devMode = true,
-    port = process.argv[2] || 2001 /*8888*/
+    port = process.argv[2] || 2000
     ;
 
 var clientController,
@@ -79,8 +79,8 @@ function route(request, onDontExists, onReadFileError, onStaticResource, onInval
             if((filename.split(".")[filename.split(".").length-1]).toLowerCase() == "html") {
 
                 var modelName       = filename.split(process.cwd())[1];
-                    modelName       = path.join(slotJson.framework.mvcRootDir, modelName.replace(/^\\www|^\/www/g, ""));
-                    //"\\www Rolling \\www Stones /www pie /ww".replace(/^\\www/g, "")
+                modelName       = path.join(slotJson.framework.mvcRootDir, modelName.replace(/^\\www|^\/www/g, ""));
+                //"\\www Rolling \\www Stones /www pie /ww".replace(/^\\www/g, "")
                 var modelSFile      = Util.prefixFileName(modelName, "m").replace(".html", "Srv.js");
                 var viewFile        = Util.prefixFileName(modelName, "v").replace(".html", ".js");
                 var pageModelFile   = Util.prefixFileName(modelName, "pageModel").replace(".html", ".js");
@@ -147,12 +147,12 @@ function route(request, onDontExists, onReadFileError, onStaticResource, onInval
                              * function Slot() {" + clientController + "};
                              */
                             htmlContent = htmlContent.replace("</body>",
-                                    "<script>" +
-                                    "function slotF() {" +
-                                    clientController +
-                                    "};" +
-                                    "var Slot = new slotF();" +
-                                    "</script></body>");
+                                "<script>" +
+                                "function slotF() {" +
+                                clientController +
+                                "};" +
+                                "var Slot = new slotF();" +
+                                "</script></body>");
 
                             /**
                              * Return html content to MainController
@@ -378,7 +378,7 @@ function start(port) {
                         },
                         function(err) {
                             // Start server
-                            port || (port = 2001)
+                            port || (port = 2000)
                             http.createServer(app).listen(parseInt(port, 10));
 
                             Util.startSplash("Development", port, slotJson);

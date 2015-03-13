@@ -167,7 +167,7 @@ module.exports = function (grunt) {
         var options = {
             host: '127.0.0.1',
             path: url,
-            port :2000
+            port :2001
         };
 
         callback = function(response) {
