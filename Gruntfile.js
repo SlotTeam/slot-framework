@@ -81,14 +81,9 @@ module.exports = function (grunt) {
             )
         );
 
-        /**
-         * TODO:
-         *  1.  Create PID file to control start/Stop for the grunt tasks
-         *  1.1 If an instance is running, we need to stop that previous
-         *      instance and then start the new instance.
-         *      Else case, we continue to start the new instance.
-         */
-
-        grunt.task.run('watch');
+        //Prepare to run main task
+        gruntTasks.handlePIDFile(function () {
+            grunt.task.run('watch');
+        });
     });
 };
