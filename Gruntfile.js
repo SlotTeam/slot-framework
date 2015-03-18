@@ -1,89 +1,189 @@
+/**
+ * Created by cecheverria on 3/14/15.
+ */
+
 var path = require("path"),
-    slot = require('./slot.json'),
-    usageMap = require('./.usageMap.json'),
-    slotApi = require('slot-framework'),
-    gruntTasks = slotApi.GruntTasks.create()
+    fs = require('fs'),
+    sortObj = require('sort-object'),
+    async = require('async')
     ;
 
+function GruntTasks() {
 
-module.exports = function (grunt) {
+}
+GruntTasks.create = function () { return new GruntTasks(); }
 
-    grunt.loadNpmTasks('grunt-contrib-watch');
+/**
+ * Creates PID file to control start/Stop for the grunt tasks.
+ *
+ * If an instance is running, we need to stop that previous instance and then start the new
+ * instance.
+ *
+ * Else case, we continue to start the new instance.
+ *
+ * @param callback
+ */
+GruntTasks.prototype.handlePIDFile = function(callback) {
+    var pidFile;
 
-    // Project configuration.
-    grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-        watch: {
-            configFiles: {
-                files: [ 'Gruntfile.js' ],
-                options: {
-                    reload: true
-                }
-            },
-            html: {
-                files: ['www/**/*.html'],
-                options: {
-                    interrupt: true,
-                    debounceDelay: 1000
-                }
-            },
-            fragmentRootDir: {
-                files: ['design/fragment/**/*.html']
-            },
-            metaData: {
-                files: ['design/bind/**/*.json']
+    if(fs.existsSync(path.join(process.cwd(), '.pid.json'))) {
+        //PID file already exists
+        pidFile = require(path.join(process.cwd(), '.pid.json'));
+
+        //Kill the previous pid listed in the pid.json file
+        if(pidFile.watch != process.pid)
+            try {
+                process.kill(pidFile.watch);
+                console.log('Killing previous `pidFile.watch`: ' + pidFile.watch + ' success');
             }
-        }
+            catch(e) {
+                console.log('Problems killing previous `pidFile.watch`: ' + pidFile.watch);
+            }
+    }
+    else {
+        //PID file does not exists
+        pidFile = new Object();
+    }
+
+    console.log('Preparing to start');
+
+    pidFile['watch'] = process.pid;
+    updatePID(pidFile);
+
+
+    callback();
+    console.log('Started on process pid ' + process.pid);
+
+    //Set event for shutdown hook
+    process.on('beforeExit', function(code) {
+        console.log('About to exit with code:', code);
+
+        pidFile['watch'] = 0;
+        pidFile['exitCode'] = code;
+        updatePID(pidFile);
     });
-    grunt.event.on('watch', function(action, filePath, target) {
-        console.log(target + ': ' + filePath + ' has ' + action);
+}
 
-        if (target != 'configFiles') {
-            if (target == 'html') {
-                gruntTasks.buildPageFromHtml(slot, usageMap, filePath);
+function updatePID(pidFile) {
+    //fs.writeFile(path.join(process.cwd(), '.pid.json'), JSON.stringify(pidFile, null, 4), function (err) {
+    //    console.log('pidFile updated: ' + (err ? ' failed ' : 'success'));
+    //});
+
+    var err = fs.writeFileSync(path.join(process.cwd(), '.pid.json'), JSON.stringify(pidFile, null, 4));
+
+    console.log('pidFile updated: ' + (err ? ' failed ' : 'success'));
+}
+
+GruntTasks.prototype.buildPage = function(url, callbackEnd) {
+    var http = require('http');
+    var options = {
+        host: '127.0.0.1',
+        path: url,
+        port :2001
+    };
+
+    callback = function(response) {
+        var str = '';
+
+        //another chunk of data has been recieved, so append it to `str`
+        response.on('data', function (chunk) {
+            str += chunk;
+        });
+
+        //the whole response has been recieved, so we just print it out here
+        response.on('end', function () {
+            // console.log(str);
+            callbackEnd(str);
+        });
+    }
+
+    http.request(options, callback).end();
+}
+
+GruntTasks.prototype.buildPageFromHtml = function (/*url,*/ slot, usageMap, filePath) {
+
+    var _this = this,
+        url = path.join('/', filePath).replace(slot.framework.webRootDir, '');
+
+    console.log('url: ' + url);
+
+    // Extract all fragment type attributes, using the regex ({@)[^\s]*(@})
+    fs.readFile(filePath, 'binary', function(err, data) {
+
+        var re = /({@)[^\s]*(@})/g; // Regex to find fragments used on this page
+        var str = data;
+        var m, fragments = [], fragmentName, index = 0;
+
+        while ((m = re.exec(str)) != null) {
+
+            if (m.index === re.lastIndex) {
+                re.lastIndex++;
             }
-            else if (target == 'fragmentRootDir') {
-                gruntTasks.buildFragmentFromHtml(slot, usageMap, filePath);
-            }
-            else {
-                //url = url.replace(slot.framework.metaData, '');
-                /**
-                 * TODO:
-                 *  1.  Build pages from fragments metaDataBinding
-                 */
-            }
+
+            fragmentName = m[0].replace("{@","").replace("@}","");
+            console.log(fragmentName);
+
+            // Add only declared fragments
+            if (slot.fragments[fragmentName]) {
+                fragments[index++] = fragmentName;
+
+                // Create fragment reference if does not exist
+                !usageMap.fragment[fragmentName] && (usageMap.fragment[fragmentName] = []);
+
+                // Add relation beteewn fragment and page if it does not exists
+                usageMap.fragment[fragmentName].indexOf(url) < 0 && (usageMap.fragment[fragmentName].push(url));
+            };
         }
-    });
 
-    grunt.registerTask('default', 'Initiate services for Slot Framework', function() {
+        // Update used fragments on .usageMap.json file
+        usageMap.page[url] = fragments.sort();
+        usageMap.page = sortObj(usageMap.page);
 
-        grunt.config('watch.html.files',
-            path.join( '.'
-                , slot.framework.webRootDir
-                , '/**/**/**/**/**/**/**/**/**/'
-                , '*.html'
-            )
-        );
+        // Update the .usageMap file
+        fs.writeFile('../../.usageMap.json', JSON.stringify(usageMap, null, 4), function (err) {
 
-        grunt.config('watch.fragmentRootDir.files',
-            path.join( '.'
-                , slot.framework.fragmentRootDir
-                , '/**/**/**/**/**/**/**/**/**/'
-                , '*.html'
-            )
-        );
+            console.log('usageMap updated: ' + (err ? ' failed ' : 'success') + ' for ' + url);
 
-        grunt.config('watch.metaData.files',
-            path.join( '.'
-                , slot.framework.metaData
-                , '/**/**/**/**/**/**/**/**/**/'
-                , '*.json'
-            )
-        );
-
-        //Prepare to run main task
-        gruntTasks.handlePIDFile(function () {
-            grunt.task.run('watch');
+            if (!err)
+                _this.buildPage(url, function(content) {
+                    console.log('received content: ' + content.length + 'Kb');
+                });
         });
     });
-};
+}
+
+GruntTasks.prototype.buildFragmentFromHtml = function (/*url,*/ slot, usageMap, filePath) {
+
+    var _this = this,
+        url = path.join('/', filePath).replace(slot.framework.fragmentRootDir, ''),
+        fragmentName = url.split("/").pop().split(".")[0];
+
+    console.log('fragment: ' + fragmentName);
+
+    // Add only declared fragments
+    if (slot.fragments[fragmentName] && usageMap.fragment[fragmentName]) {
+
+        async.eachSeries(usageMap.fragment[fragmentName], function( page, callback) {
+            console.log('fragment: ' + fragmentName + ' - page:' + page);
+
+            setTimeout(function() {
+                _this.buildPage(page, function(content) {
+                    console.log('received content: ' + content.length + 'Kb - ' + (new Date()).getTime() );
+
+                    callback();
+                });
+            }, 1000);
+
+        }, function(err){
+            // if any of the file processing produced an error, err would equal that error
+            if( err ) {
+                // One of the iterations produced an error, the processing will now stop.
+                console.log('Building pages has failed');
+            } else {
+                console.log('All pages have been built successfully');
+            }
+        });
+    }
+}
+
+module.exports = GruntTasks;
