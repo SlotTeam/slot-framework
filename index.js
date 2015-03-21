@@ -6,17 +6,17 @@ var connect = require('connect'),
     url = require("url"),
     path = require("path"),
     fs = require("fs"),
-    mkdirp = require('mkdirp'),
     mime = require("mime"),
-    Render = require("./render"),
-    Paginate = require("./paginate"),
-    Util = require("./util"),
-    Designer = require("./designer"),
-    Logger = require('./logger'),
-    fileio = require('./fileio'),
-    config = require('./config'),
 
-    restProvider = require('./routes/restProvider'),
+    Render =        require("./lib/render"),
+    Paginate =      require("./lib/paginate"),
+    Util =          require("./lib/util"),
+    Designer =      require("./lib/designer"),
+    Logger =        require('./lib/logger'),
+    fileio =        require('./lib/fileio'),
+    config =        require('./lib/config'),
+    GruntTasks =    require('./lib/gruntTasks'),
+    restProvider =  require('./routes/restProvider'),
 
     resourcesCache = new Object(),
     viewsExistsCache = new Object(),
@@ -44,7 +44,7 @@ var clientController,
 function route(request, onDontExists, onReadFileError, onStaticResource, onInvalidView, onBindComplete, onRestful) {
 
     var uri = url.parse(request.url).pathname,
-        filename = path.join(process.cwd(), slotJson.framework.webRootDir /*"/www"*/ + uri),
+        filename = path.join(process.cwd(), slotJson.framework.webRootDir + uri),
         uriFileName = uri;
 
     fs.exists(filename, function(err) {
@@ -55,11 +55,11 @@ function route(request, onDontExists, onReadFileError, onStaticResource, onInval
             isRest = Util.isRestApiCall(uri, slotJson.framework.restFilter);
             //
             if(isRest)
-                filename = path.join(process.cwd(), slotJson.framework.restRootDir, uri.replace(slotJson.framework.restFilter /*"/rest"*/, ""));
+                filename = path.join(process.cwd(), slotJson.framework.restRootDir, uri.replace(slotJson.framework.restFilter, ""));
             else {
                 isMvcCall = Util.isMvcApiCall(uri, slotJson.framework.mvcFilter);
                 if(isMvcCall)
-                    filename = path.join(process.cwd(), slotJson.framework.mvcRootDir, uri.replace(slotJson.framework.mvcFilter /*"/mvc"*/, ""));
+                    filename = path.join(process.cwd(), slotJson.framework.mvcRootDir, uri.replace(slotJson.framework.mvcFilter, ""));
                 else
                     return onDontExists();
             }
@@ -139,7 +139,6 @@ function route(request, onDontExists, onReadFileError, onStaticResource, onInval
                             /**
                              * Inject client side model and client controller
                              */
-                                //htmlContent = htmlContent.replace("</body>", "<script src='" + modelCFile.replace(/\\/g, "/") + "'></script></body>");
                             htmlContent = htmlContent.replace("</body>", "<script src='" + mvcInjectorUrl.replace(/\\/g, "/") + "'></script></body>");
 
                             /**
@@ -193,7 +192,7 @@ function route(request, onDontExists, onReadFileError, onStaticResource, onInval
                     ? modelName.replace("\\"+lastCommand, "")
                     : modelName;
 
-                var localViewFile = path.join(process.cwd(), Util.prefixFileName(modelName, "m") + ".js" /*viewFile*/);
+                var localViewFile = path.join(process.cwd(), Util.prefixFileName(modelName, "m") + ".js");
                 //
                 if(viewsExistsCache[localViewFile] == undefined)
                     viewsExistsCache[localViewFile] = fs.existsSync(localViewFile);
@@ -203,7 +202,7 @@ function route(request, onDontExists, onReadFileError, onStaticResource, onInval
                      * Return javascript content to web client
                      */
                     resolveStaticResource(localViewFile, function(filename, buffer) {
-                        onRestful(buffer/*restContent*/, "text/javascript" /*contentType*/);
+                        onRestful(buffer, "text/javascript");
                     });
                 }
                 else
@@ -215,7 +214,6 @@ function route(request, onDontExists, onReadFileError, onStaticResource, onInval
             }
         }
         catch (e) {
-            //logger.error("loading exception: %s %s %j", filename, e, {exception:e+""}, {});
             logger.error("loading exception: %s %j", filename, {exception:e+""}, {});
             return onReadFileError(e);
         }
@@ -230,13 +228,13 @@ function resolveStaticResource(filename, onStaticResource) {
         onStaticResource(filename, resourcesCache[filename]);
     }
     else {
-        fs.readFile(filename, 'binary' /*'utf8'*/, function (err, buffer) {
+        fs.readFile(filename, 'binary', function (err, buffer) {
             logger.info("Caching resource %s", filename);
 
             //Save on Resource Cache
             resourcesCache[filename] = buffer;
             //Serve the resource
-            onStaticResource(filename, buffer /*file*/);
+            onStaticResource(filename, buffer);
         });
     }
 }
@@ -275,7 +273,6 @@ function start(port) {
 
             var uri = url.parse(request.url).pathname;
 
-            //logger.info("serving " + uri + " - init:" + (new Date()));
             logger.info("serving %s", uri);
 
             route(request,
@@ -349,7 +346,7 @@ function start(port) {
     /**
      * Load javaScript client controller
      */
-    clientController = path.join(process.cwd(), "node_modules/slot-framework/render.js".replace(/\//g, path.sep));
+    clientController = path.join(__dirname, "/lib/render.js".replace(/\//g, path.sep));
 
     fileio.readFile(clientController,
         fileio.FORMATS.binary,
@@ -410,7 +407,6 @@ module.exports.getDevMode = function (flag) {
 };
 
 module.exports.start = start;
-//module.exports.load = load;
 module.exports.render = Render.render;
 module.exports.responseBase = Paginate.ResponseBase;
 module.exports.responsePage = Paginate.ResponsePage;
@@ -422,6 +418,7 @@ module.exports.Util = function () {
 module.exports.logger = logger;
 
 /**
- * Define modules for Designer Server
+ * Serve API modules
  */
 module.exports.Designer = Designer;
+module.exports.GruntTasks = GruntTasks;

@@ -3,8 +3,8 @@
  */
 var url = require("url"),
     path = require("path"),
-    Paginate = require("../paginate"),
-    Util = require("../util")
+    Paginate = require("../lib/paginate"),
+    Util = require("../lib/util")
     ;
 
 function restProvider(request, filename, options) {
@@ -23,8 +23,8 @@ function restProvider(request, filename, options) {
     lastCommand = lastCommand[lastCommand.length-1].toLowerCase();
 
     modelName = Util.isRestCommand(lastCommand)
-                ? modelName.replace(path.sep+lastCommand, "")
-                : modelName;
+        ? modelName.replace(path.sep+lastCommand, "")
+        : modelName;
 
     var viewFile = modelName + ".js";
     var restModule = Util.appFullPath() + viewFile.replace(/\\/g, "/");     //<<== View on server side
@@ -64,11 +64,11 @@ function restProvider(request, filename, options) {
         //
         var response,
             contentType = (!format ? "json" : format).toLowerCase();
-            contentType = ajaxCallback
-                          ? "text/javascript"
-                          : format == "json" ? "application/json"
-                          : format == "xml" ? "xml/text"
-                          : "application/json";
+        contentType = ajaxCallback
+            ? "text/javascript"
+            : format == "json" ? "application/json"
+            : format == "xml" ? "xml/text"
+            : "application/json";
         //
         var sess = request.session,
             sessionKey = modelName.split("\\").join('-');
