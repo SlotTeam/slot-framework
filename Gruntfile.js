@@ -1,9 +1,9 @@
 var path = require("path"),
     fs = require('fs'),
     slot = require('./slot.json'),
-    usageMap = null,
     slotApi = require('slot-framework'),
-    gruntTasks = slotApi.GruntTasks.create()
+    gruntTasks = slotApi.GruntTasks.create(),
+    usageMap = null
     ;
 
 module.exports = function (grunt) {
