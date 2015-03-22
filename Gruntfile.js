@@ -86,7 +86,7 @@ module.exports = function (grunt) {
         );
 
         //Prepare to run main task
-        gruntTasks.handlePIDFile(function () {
+        gruntTasks.handlePIDFile('watch', 'Automated Build Services', function () {
             grunt.task.run('watch');
         });
     });
