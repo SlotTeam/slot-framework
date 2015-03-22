@@ -1,9 +1,9 @@
 var path = require("path"),
     fs = require('fs'),
     slot = require('./slot.json'),
+    usageMap = null,
     slotApi = require('slot-framework'),
-    gruntTasks = slotApi.GruntTasks.create(),
-    usageMap = null
+    gruntTasks = slotApi.GruntTasks.create()
     ;
 
 module.exports = function (grunt) {
@@ -54,8 +54,13 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', 'Initiate services for Slot Framework', function() {
 
+        var usageMapPath = path.join(__dirname, './.usageMap.json');
+
+        //Validate UsageMap file exists
+        gruntTasks.createUsageMap();
+
         //Load usageMap.json file
-        usageMap = fs.readFileSync(path.join(__dirname, './.usageMap.json'),'binary');
+        usageMap = fs.readFileSync(usageMapPath,'binary');
         usageMap = JSON.parse(usageMap);
 
         grunt.config('watch.html.files',
