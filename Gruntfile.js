@@ -54,13 +54,11 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', 'Initiate services for Slot Framework', function() {
 
-        var usageMapPath = path.join(__dirname, './.usageMap.json');
-
         //Validate UsageMap file exists
         gruntTasks.createUsageMap();
 
         //Load usageMap.json file
-        usageMap = fs.readFileSync(usageMapPath,'binary');
+        usageMap = fs.readFileSync(path.join(process.cwd(), './.usageMap.json'),'binary');
         usageMap = JSON.parse(usageMap);
 
         grunt.config('watch.html.files',

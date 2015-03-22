@@ -1,6 +1,6 @@
 {
   "name": "slot-framework",
-  "version": "0.0.16-alpha.3",
+  "version": "0.0.16-alpha.4",
   "description": "Closing the gap between server and client side, Slot is a Cross Side MVC Web Framework that lets developers reuse code on both sides, see more at SlotFramework.org",
   "keywords": [
     "framework",
