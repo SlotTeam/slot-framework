@@ -374,11 +374,15 @@ function start(port) {
                             logger.error('Error creating logs folder [%s] %j', logs, err, {});
                         },
                         function(err) {
-                            // Start server
-                            port || (port = 2000)
-                            http.createServer(app).listen(parseInt(port, 10));
+                            //Save current process ID to pid.json file
+                            GruntTasks.create().handlePIDFile('development', 'Development Server', false/*verbose*/, function () {
 
-                            Util.startSplash("Development", port, slotJson);
+                                // Start server
+                                port || (port = 2000)
+                                http.createServer(app).listen(parseInt(port, 10));
+
+                                Util.startSplash("Development", port, slotJson);
+                            })
                         }
                     );
                 }
