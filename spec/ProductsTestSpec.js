@@ -2,6 +2,7 @@
 var path = require("path"),
     fs = require('fs'),
     processio = require('../lib/processio'),
+    fileio = require('../lib/fileio'),
     request = require('request'),
     minify = require('html-minifier').minify
     ;
@@ -9,8 +10,8 @@ var path = require("path"),
 // Build project/folder name relative to user $HOME path
 var project = 'CITest',
     working = '~/',
-    //working = process.cwd(),
     folder = path.join(working, project);
+
 console.log('Build new project on: %s', working);
 console.log('Starting  project on: %s', folder);
 
@@ -93,6 +94,14 @@ describe('Starting Automated Build Services', function() {
     }, 3500);
 });
 
+var minifyOps = {
+    removeAttributeQuotes: true,
+    removeComments: true,
+    collapseWhitespace: true,
+    removeEmptyElements: true,
+    minifyJS: true,
+    removeScriptTypeAttributes: true
+};
 
 describe('Adding `dashboard` page to the web app', function() {
     it('`dashboard` page should be created on '+folder, function(done) {
@@ -109,6 +118,17 @@ describe('Adding `dashboard` page to the web app', function() {
         );
     }, 3500);
     //
+    it('`dashboard` page should be served as `http://localhost:2001/dashboard.html`', function(done) {
+
+        request("http://localhost:2001/dashboard.html", function(error, response, body){
+            console.log((new Date()).getTime() + ': `dashboard` page request result: {err:%s, response:%s},', error, response.statusCode);
+            //
+            _body = body;
+            expect(!error && response.statusCode == 200).toBe(true);
+            done();
+        });
+    }, 3500);
+    //
     var _body;
     it('`dashboard` page should be served as `http://localhost:2000/dashboard.html`', function(done) {
 
@@ -122,29 +142,29 @@ describe('Adding `dashboard` page to the web app', function() {
         });
     }, 3500);
     //
-    it('`dashboard` page should be rendered as expected', function(done) {
+    it('`dashboard` page should be rendered on Development Server as expected', function(done) {
 
-        var result = minify(_body, {
-            removeAttributeQuotes: true,
-            removeComments: true,
-            collapseWhitespace: true,
-            removeEmptyElements: true
-        });
+        fs.readFile('./spec/output/dashboardPage.min.html', 'binary',
+            function(err, buffer) {
 
-        console.log('%s', result);
-        expect(result).toBe('<!DOCTYPE html><html><head lang=en><meta charset=UTF-8><title>dashboard page</title></head><body><div>Welcome to dashboard page</div></body></html>');
-        done();
+                var result = minify(_body, minifyOps);
+                delete _body;
 
+                console.log('%s', result);
+                expect(result).toBe(buffer);
+                done();
+            }
+        );
     }, 3500);
 });
 
 
-describe('Adding pages to the web app', function() {
-    it('should be `page2` created on '+folder, function(done) {
+describe('Adding `profile` page to the web app', function() {
+    it('`profile` page should be created on '+folder, function(done) {
         var err;
-        processio.run('cd '+folder+'; ' + ' slot add -p page2;',
+        processio.run('cd '+folder+'; ' + ' slot add -p profile;',
             function(error, stdout, stderr) {
-                console.log((new Date()).getTime() + ': Page `page2` creation result: {err:%s},', error);
+                console.log((new Date()).getTime() + ': `profile` page creation result: {err:%s},', error);
                 console.log('%s', stdout);
                 err = error;
                 //
@@ -153,14 +173,54 @@ describe('Adding pages to the web app', function() {
             }
         );
     }, 3500);
+    //
+    it('`profile` page should be served as `http://localhost:2001/profile.html`', function(done) {
+
+        request("http://localhost:2001/profile.html", function(error, response, body){
+            console.log((new Date()).getTime() + ': `profile` page request result: {err:%s, response:%s},', error, response.statusCode);
+            //
+            _body = body;
+            expect(!error && response.statusCode == 200).toBe(true);
+            done();
+        });
+    }, 3500);
+    //
+    var _body;
+    it('`profile` page should be served as `http://localhost:2000/profile.html`', function(done) {
+
+        request("http://localhost:2000/profile.html", function(error, response, body){
+            console.log((new Date()).getTime() + ': `profile` page request result: {err:%s, response:%s},', error, response.statusCode);
+            //console.log('%s', body);
+            //
+            _body = body;
+            expect(!error && response.statusCode == 200).toBe(true);
+            done();
+        });
+    }, 3500);
+    //
+    it('`profile` page should be rendered on Development Server as expected', function(done) {
+
+        fs.readFile('./spec/output/profilePage.min.html', 'binary',
+            function(err, buffer) {
+
+                var result = minify(_body, minifyOps);
+                delete _body;
+
+                console.log('%s', result);
+                expect(result).toBe(buffer);
+                done();
+            }
+        );
+    }, 3500);
+});
 
 
-
-    it('should be `pages/product` created on '+folder, function(done) {
+describe('Adding `pages/product` page to the web app', function() {
+    it('`pages/product` page should be created on '+folder, function(done) {
         var err;
         processio.run('cd '+folder+'; ' + ' slot add -p pages/product;',
             function(error, stdout, stderr) {
-                console.log((new Date()).getTime() + ': Page `pages/product` creation result: {err:%s},', error);
+                console.log((new Date()).getTime() + ': `pages/product` page creation result: {err:%s},', error);
                 console.log('%s', stdout);
                 err = error;
                 //
@@ -169,16 +229,97 @@ describe('Adding pages to the web app', function() {
             }
         );
     }, 3500);
+    //
+    it('`pages/product` page should be served as `http://localhost:2001/pages/product.html`', function(done) {
 
-    it('should be `pages/product/list` created on '+folder, function(done) {
+        request("http://localhost:2001/pages/product.html", function(error, response, body){
+            console.log((new Date()).getTime() + ': `pages/product` page request result: {err:%s, response:%s},', error, response.statusCode);
+            //
+            _body = body;
+            expect(!error && response.statusCode == 200).toBe(true);
+            done();
+        });
+    }, 3500);
+    //
+    var _body;
+    it('`pages/product` page should be served as `http://localhost:2000/pages/product.html`', function(done) {
+
+        request("http://localhost:2000/pages/product.html", function(error, response, body){
+            console.log((new Date()).getTime() + ': `pages/product` page request result: {err:%s, response:%s},', error, response.statusCode);
+            //console.log('%s', body);
+            //
+            _body = body;
+            expect(!error && response.statusCode == 200).toBe(true);
+            done();
+        });
+    }, 3500);
+    //
+    it('`pages/product` page should be rendered on Development Server as expected', function(done) {
+
+        fs.readFile('./spec/output/pagesProductPage.min.html', 'binary',
+            function(err, buffer) {
+
+                var result = minify(_body, minifyOps);
+                delete _body;
+
+                console.log('%s', result);
+                expect(result).toBe(buffer);
+                done();
+            }
+        );
+    }, 3500);
+});
+
+
+describe('Adding `pages/product/list` page to the web app', function() {
+    it('`pages/product/list` page should be created on '+folder, function(done) {
         var err;
         processio.run('cd '+folder+'; ' + ' slot add -p pages/product/list;',
             function(error, stdout, stderr) {
-                console.log((new Date()).getTime() + ': Page `pages/product/list  ` creation result: {err:%s},', error);
+                console.log((new Date()).getTime() + ': `pages/product/list` page creation result: {err:%s},', error);
                 console.log('%s', stdout);
                 err = error;
                 //
                 expect(err).toBe(null);
+                done();
+            }
+        );
+    }, 3500);
+    //
+    it('`pages/product/list` page should be served as `http://localhost:2001/pages/product/list.html`', function(done) {
+
+        request("http://localhost:2001/pages/product/list.html", function(error, response, body){
+            console.log((new Date()).getTime() + ': `pages/product/list` page request result: {err:%s, response:%s},', error, response.statusCode);
+            //
+            _body = body;
+            expect(!error && response.statusCode == 200).toBe(true);
+            done();
+        });
+    }, 3500);
+    //
+    var _body;
+    it('`pages/product/list` page should be served as `http://localhost:2000/pages/product/list.html`', function(done) {
+
+        request("http://localhost:2000/pages/product/list.html", function(error, response, body){
+            console.log((new Date()).getTime() + ': `pages/product/list` page request result: {err:%s, response:%s},', error, response.statusCode);
+            //console.log('%s', body);
+            //
+            _body = body;
+            expect(!error && response.statusCode == 200).toBe(true);
+            done();
+        });
+    }, 3500);
+    //
+    it('`pages/product/list` page should be rendered on Development Server as expected', function(done) {
+
+        fs.readFile('./spec/output/pagesProductListPage.min.html', 'binary',
+            function(err, buffer) {
+
+                var result = minify(_body, minifyOps);
+                delete _body;
+
+                console.log('%s', result);
+                expect(result).toBe(buffer);
                 done();
             }
         );
