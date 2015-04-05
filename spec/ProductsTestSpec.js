@@ -57,6 +57,25 @@ describe('Starting Designer Server', function() {
     }, 3500);
 });
 
+describe('Starting Development Server', function() {
+
+    it('should be started "Development Server" on '+folder, function(done) {
+        var err;
+        // Starting Development Server
+        processio.run('cd '+folder+'; ' + ' slot start -d -s;',
+            function(error, stdout, stderr) {
+                console.log((new Date()).getTime() + ': Server started result: {err:%s}', error);
+                err = error;
+            }
+        );
+
+        // Wait for start is completed
+        setTimeout(function(){
+            expect(err).toBe(null);
+            done();
+        }, 3000);
+    }, 3500);
+});
 
 describe('Starting Automated Build Services', function() {
     it('should be started "Automated Build Services" on '+folder, function(done) {
@@ -75,7 +94,7 @@ describe('Starting Automated Build Services', function() {
 });
 
 
-describe('Adding pages to the web app', function() {
+describe('Adding `dashboard` page to the web app', function() {
     it('`dashboard` page should be created on '+folder, function(done) {
         var err;
         processio.run('cd '+folder+'; ' + ' slot add -p dashboard;',
@@ -91,14 +110,13 @@ describe('Adding pages to the web app', function() {
     }, 3500);
     //
     var _body;
-    it('`dashboard` page should be served as `http://localhost:2001/dashboard.html`', function(done) {
+    it('`dashboard` page should be served as `http://localhost:2000/dashboard.html`', function(done) {
 
-        request("http://localhost:2001/dashboard.html", function(error, response, body){
+        request("http://localhost:2000/dashboard.html", function(error, response, body){
             console.log((new Date()).getTime() + ': `dashboard` page request result: {err:%s, response:%s},', error, response.statusCode);
-            console.log('%s', body);
+            //console.log('%s', body);
             //
             _body = body;
-
             expect(!error && response.statusCode == 200).toBe(true);
             done();
         });
@@ -106,20 +124,22 @@ describe('Adding pages to the web app', function() {
     //
     it('`dashboard` page should be rendered as expected', function(done) {
 
-        var result = minify(_body/*'<p title="blah" id="moo">foo</p>'*/, {
-            //removeAttributeQuotes: true
+        var result = minify(_body, {
+            removeAttributeQuotes: true,
             removeComments: true,
             collapseWhitespace: true,
             removeEmptyElements: true
         });
 
         console.log('%s', result);
-        expect(result).toBe('<!DOCTYPE html><html><head lang="en"><meta charset="UTF-8"><title>dashboard page</title></head><body><div>Welcome to dashboard page</div></body></html>');
+        expect(result).toBe('<!DOCTYPE html><html><head lang=en><meta charset=UTF-8><title>dashboard page</title></head><body><div>Welcome to dashboard page</div></body></html>');
         done();
 
     }, 3500);
+});
 
 
+describe('Adding pages to the web app', function() {
     it('should be `page2` created on '+folder, function(done) {
         var err;
         processio.run('cd '+folder+'; ' + ' slot add -p page2;',
