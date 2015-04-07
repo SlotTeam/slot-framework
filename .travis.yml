@@ -3,6 +3,6 @@
    - "0.12"
    - "0.11"
    - "0.10"
-before_script:
+before_install:
   - npm install -g slot-cli
   - npm install -g jasmine-node
