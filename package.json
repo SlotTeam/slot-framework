@@ -58,5 +58,8 @@
     "grunt-contrib-watch": "^0.6.1",
     "html-minifier": "^0.7.1",
     "request": "^2.55.0"
+  },
+  "scripts": {
+    "test": "jasmine-node spec/ --verbose"
   }
 }
