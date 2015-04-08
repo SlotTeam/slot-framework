@@ -18,10 +18,11 @@ console.log('Starting  project on: %s', folder);
 
 describe('Create a new Test Project', function() {
     it('must be created a project on '+folder, function(done) {
-        processio.run('cd '+working+';' + 'rm -r '+project+'; ' + 'slot create '+project,
+        processio.run('cd '+working+'; ' /*+ 'rm -r '+project+'; '*/ + 'slot create '+project,
             function(error, stdout, stderr) {
                 console.log((new Date()).getTime() + ': Test Project created result: {err:%s}', error);
                 expect(error).toBe(null);
+                console.log((new Date()).getTime() + ': Test Project created result: {err:%s}', error);
                 done();
             }
         );
