@@ -1,2 +1,4 @@
 .idea/
+.coveralls.yml
+./coverage
 npm-debug.log
