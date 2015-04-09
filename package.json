@@ -63,7 +63,9 @@
     "request": "^2.55.0"
   },
   "scripts": {
-    "test": "jasmine-node spec/ --verbose",
-    "coverall": "istanbul cover jasmine-node --captureExceptions spec/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "test": "istanbul cover jasmine-node --captureExceptions spec/",
+    "jasmine": "jasmine-node spec/ --verbose",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coveralls-all": "istanbul cover jasmine-node --captureExceptions spec/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   }
 }

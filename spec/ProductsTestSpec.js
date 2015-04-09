@@ -22,11 +22,10 @@ describe('Create a new Test Project', function() {
             function(error, stdout, stderr) {
                 console.log((new Date()).getTime() + ': Test Project created result: {err:%s}', error);
                 expect(error).toBe(null);
-                console.log((new Date()).getTime() + ': Test Project created result: {err:%s}', error);
                 done();
             }
         );
-    }, 20000);
+    }, 10000);
 
     it('slot.json file must be created on '+folder, function(done) {
         fs.readFile(/*path.join(folder, 'slot.json')*/ '/Users/cecheverria/CITest/slot.json', 'binary',
