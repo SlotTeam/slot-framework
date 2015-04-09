@@ -12,3 +12,9 @@ dependencies:
 test:
   override:
     - npm run coveralls-all
+
+general:
+  branches:
+    only:
+      - master
+      - develop
