@@ -1,0 +1,14 @@
+machine:
+  node:
+    version:
+     - 0.12.0
+     - 0.11.8
+     - 0.10.0
+
+dependencies:
+  pre:
+    - npm install -g slot-cli
+
+test:
+  override:
+    - npm run coveralls-all
