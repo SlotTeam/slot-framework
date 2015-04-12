@@ -7,8 +7,8 @@ dependencies:
     - npm install -g slot-cli
 
 test:
-  override:
-    - npm run coveralls-all
+  post:
+    - npm run coveralls
 
 general:
   branches:
