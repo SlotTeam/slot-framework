@@ -5,6 +5,6 @@
    - "0.10"
  sudo: required
  before_install:
-   - npm install -g slot-cli
+   - npm install -g slot-cli@"~0.0.17-alpha"
  after_success:
    - npm run coveralls

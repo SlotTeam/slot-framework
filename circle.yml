@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   pre:
-    - npm install -g slot-cli
+    - npm install -g slot-cli@"~0.0.17-alpha"
 
 test:
   post:
