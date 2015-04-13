@@ -1,8 +1,6 @@
 [![NPM version](https://badge.fury.io/js/slot-framework.svg)](http://badge.fury.io/js/slot-framework)
 [![GitHub version](https://badge.fury.io/gh/SlotTeam%2Fslot-framework.svg)](http://badge.fury.io/gh/SlotTeam%2Fslot-framework)
-[![Circle CI](https://circleci.com/gh/SlotTeam/slot-framework/tree/develop.svg?style=svg)](https://circleci.com/gh/SlotTeam/slot-framework/tree/develop)
 [![Circle CI](https://circleci.com/gh/SlotTeam/slot-framework/tree/develop.png)](https://circleci.com/gh/SlotTeam/slot-framework/tree/develop)
-[![Circle CI](https://circleci.com/gh/SlotTeam/slot-framework/tree/develop.png?style=shield)](https://circleci.com/gh/SlotTeam/slot-framework/tree/develop)
 [![Coverage Status](https://coveralls.io/repos/SlotTeam/slot-framework/badge.svg?branch=develop)](https://coveralls.io/r/SlotTeam/slot-framework?branch=develop)
 
 
