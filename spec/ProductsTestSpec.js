@@ -16,6 +16,7 @@ console.log('Build new project on: %s', working);
 console.log('Starting  project on: %s', folder);
 
 
+
 describe('Create a new Test Project', function() {
     it('must be created a project on '+folder, function(done) {
         processio.run('cd '+working+'; ' /*+ 'rm -r '+project+'; '*/ + 'slot create '+project,
@@ -28,7 +29,7 @@ describe('Create a new Test Project', function() {
     }, 10000);
 
     it('slot.json file must be created on '+folder, function(done) {
-        fs.readFile(path.join(folder, 'slot.json'), 'binary',
+        fileio.readFile(path.join(folder, 'slot.json'), 'binary',
             function(err, buffer) {
                 console.log((new Date()).getTime() + ': slot.json file read result: {err:%s, size:%s}', err, buffer.length);
                 expect(err).toBe(null);
