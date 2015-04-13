@@ -1,15 +1,15 @@
 
-var path = require("path"),
-    fs = require('fs'),
+var path =      require("path"),
+    fs =        require('fs'),
     processio = require('../lib/processio'),
-    fileio = require('../lib/fileio'),
-    request = require('request'),
-    minify = require('html-minifier').minify
+    fileio =    require('../lib/fileio'),
+    request =   require('request'),
+    minify =    require('html-minifier').minify
     ;
 
 // Build project/folder name relative to user $HOME path
 var project = 'CITest',
-    working = '~/',
+    working = fileio.getUserHome(),
     folder = path.join(working, project);
 
 console.log('Build new project on: %s', working);
@@ -28,21 +28,17 @@ describe('Create a new Test Project', function() {
     }, 10000);
 
     it('slot.json file must be created on '+folder, function(done) {
-
-        console.log('It: slot.json file must be created on %s ', folder);
-
-        fs.readFile(path.join(folder, 'slot.json') /*'/Users/cecheverria/CITest/slot.json'*/, 'binary',
+        fs.readFile(path.join(folder, 'slot.json'), 'binary',
             function(err, buffer) {
                 console.log((new Date()).getTime() + ': slot.json file read result: {err:%s, size:%s}', err, buffer.length);
                 expect(err).toBe(null);
                 done();
             }
-        );
+        )
     });
 });
 
 describe('Starting Designer Server', function() {
-    // processio.nohup('slot', ['start', '-s'], './logs/designer.log');
     it('should be started "Designer Server" on '+folder, function(done) {
         var err;
         // Starting Designer Server
