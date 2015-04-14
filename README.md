@@ -3,7 +3,6 @@
 [![Circle CI](https://circleci.com/gh/SlotTeam/slot-framework/tree/develop.png)](https://circleci.com/gh/SlotTeam/slot-framework/tree/develop)
 [![Coverage Status](https://coveralls.io/repos/SlotTeam/slot-framework/badge.svg?branch=develop)](https://coveralls.io/r/SlotTeam/slot-framework?branch=develop)
 
-
 # [Slot framework](http://www.SlotFramework.org)
 
 > Closing the gap between server and client side, Slot is a Cross Side MVC Web Framework that lets developers reuse code on both sides,

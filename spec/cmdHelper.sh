@@ -32,3 +32,18 @@ $*;
 #    Branches     : 70% ( 21/30 )
 #    Functions    : 92.54% ( 62/67 )
 #    Lines        : 93.69% ( 193/206 )
+
+#    Statements   : 94.95% ( 207/218 )
+#    Branches     : 76.67% ( 23/30 )
+#    Functions    : 95.77% ( 68/71 )
+#    Lines        : 94.95% ( 207/218 )
+
+#    Statements   : 94.12% ( 208/221 )
+#    Branches     : 67.65% ( 23/34 )
+#    Functions    : 92.96% ( 66/71 )
+#    Lines        : 94.12% ( 208/221 )
+
+#    Statements   : 94.32% ( 216/229 )
+#    Branches     : 70.59% ( 24/34 )
+#    Functions    : 94.59% ( 70/74 )
+#    Lines        : 94.32% ( 216/229 )
