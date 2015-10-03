@@ -239,7 +239,7 @@ function resolveStaticResource(filename, onStaticResource) {
     }
 }
 
-function start(port) {
+function start(port, callback) {
 
     /**
      * TODO: Many domains - Proxy Server
@@ -378,10 +378,13 @@ function start(port) {
                             GruntTasks.create().handlePIDFile('development', 'Development Server', false/*verbose*/, function () {
 
                                 // Start server
-                                port || (port = 2000)
+                                typeof port == "number" || (port = 2003);
                                 http.createServer(app).listen(parseInt(port, 10));
 
-                                Util.startSplash("Development", port, slotJson);
+                                Util.startSplash("DevelopmentX", port, slotJson);
+
+                                //Call here the callback after server has been started correctly
+                                typeof callback == "function" && callback();
                             })
                         }
                     );

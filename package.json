@@ -1,6 +1,6 @@
 {
   "name": "slot-framework",
-  "version": "0.0.17-alpha.5",
+  "version": "0.0.17-alpha.6",
   "description": "Closing the gap between server and client side, Slot is a Cross Side MVC Web Framework that lets developers reuse code on both sides, see more at SlotFramework.org",
   "keywords": [
     "framework",
@@ -36,6 +36,7 @@
     "connect": "2.12.0",
     "mime": "1.2.11",
     "mkdirp": "0.3.5",
+    "sort-object": "^3.0.0",
     "string": "^2.0.0",
     "winston": "^0.7.3",
     "winston-redis": "^0.2.1"
@@ -67,9 +68,7 @@
     "jasmine": "jasmine-node spec/ --verbose",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "coveralls-all": "istanbul cover jasmine-node --captureExceptions spec/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-
     "cli": "istanbul cover jasmine-node --captureExceptions spec/2CliTestSpec.js",
     "fileio": "istanbul cover jasmine-node --captureExceptions spec/1FileioTestSpec.js"
-
   }
 }
