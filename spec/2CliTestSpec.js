@@ -52,8 +52,8 @@ describe('Starting Designer Server', function() {
         setTimeout(function(){
             expect(err).toBe(null);
             done();
-        }, 3000);
-    }, 3500);
+        }, 13000);
+    }, 13500);
 });
 
 describe('Starting Development Server', function() {
@@ -72,8 +72,8 @@ describe('Starting Development Server', function() {
         setTimeout(function(){
             expect(err).toBe(null);
             done();
-        }, 3000);
-    }, 3500);
+        }, 13000);
+    }, 13500);
 });
 
 describe('Starting Automated Build Services', function() {
