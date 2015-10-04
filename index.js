@@ -378,10 +378,10 @@ function start(port, callback) {
                             GruntTasks.create().handlePIDFile('development', 'Development Server', false/*verbose*/, function () {
 
                                 // Start server
-                                typeof port == "number" || (port = 2003);
+                                typeof port == "number" || (port = 2000);
                                 http.createServer(app).listen(parseInt(port, 10));
 
-                                Util.startSplash("DevelopmentX", port, slotJson);
+                                Util.startSplash("Development", port, slotJson);
 
                                 //Call here the callback after server has been started correctly
                                 typeof callback == "function" && callback();
