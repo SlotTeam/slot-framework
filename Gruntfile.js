@@ -58,8 +58,12 @@ module.exports = function(grunt) {
         usageMap = fs.readFileSync(path.join(process.cwd(), './.usageMap.json'), 'binary');
         usageMap = JSON.parse(usageMap);
 
+        /**
+         * Exclude all extensions, on www folder we only want .html files
+         */
         grunt.config('watch.html.files',
-            path.join('.', slot.framework.webRootDir, '/**/**/**/**/**/**/**/**/**/', '*.html')
+            path.join('.', slot.framework.webRootDir, '/**/**/**/**/**/**/**/**/**/', '*.html'),
+            '!**.js**', '!**.json**', '!**.css**', '!**.png**', '!**.jpg**', '!**.jpge**', '!**.gif**','!**.giff**','!**.tiff**'
         );
 
         grunt.config('watch.fragmentRootDir.files',
